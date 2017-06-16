@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context="skean.yzsm.com.epdexample.MainActivity">
+
+    <Button
+        android:onClick="tempClick"
+        android:id="@+id/btnTemp"
+        android:layout_margin="32dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Temp" />
+
+    <Button
+        android:onClick="neverClick"
+        android:id="@+id/btnNever"
+        android:layout_margin="32dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Never" />
+
+
+</LinearLayout>

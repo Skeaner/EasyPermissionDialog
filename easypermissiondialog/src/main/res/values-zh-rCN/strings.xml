@@ -1,0 +1,12 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!--*******************************************************************-->
+    <!--* 权限设置 -->
+    <!--*******************************************************************-->
+
+    <string name="permissionDenyTitle">权限获取失败</string>
+    <string name="permissionNeverGrantedTips">为了功能正常运行, 我们需要您授予权限<xliff:g id="1">%1$s</xliff:g>, 请到应用设置页面授予我们这些权限, 否则程序无法正常运行.</string>
+    <string name="requestPermissionTips">为了功能正常运行, 我们需要您授予权限<xliff:g id="1">%1$s</xliff:g>, 请授予我们这些权限.</string>
+    <string name="goSetting">去设置</string>
+    <string name="requestDeny">拒绝</string>
+    <string name="requestGive">授权</string>
+</resources>
