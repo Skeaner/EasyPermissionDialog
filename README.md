@@ -1,6 +1,33 @@
-# TigerIM
-基于Openfire+Smack实现的简单即时通信客户端，界面仿照QQ实现。
-实现了简单的登陆、注册、点对点聊天，发送文本、语音、图片消息，同时程序中实现了多人之间的聊天，但是没写界面，后面有时间之后再完善吧。
-目前程序完全可以独立运行，程序里面配置了服务器。
+# EasyPermissionDialog
 
-Smack与openfire服务之间的通信关键代码和实现可以参考我的[博客文章](http://ittiger.cn/tags/smack/)
+#####便利的对话框提示应用的权限请求
+
+1.临时拒绝权限的情况
+
+``` 
+          EasyPermissionDialog.build(this)
+                            .permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE)
+                            .typeTemporaryDeny(new EasyPermissionDialog.RequestCallback() {
+                                @Override
+                                public void onDeny() {
+                                }
+
+                                @Override
+                                public void onAllow() {
+                                }
+                            })
+                            .show();
+```
+2.永久拒绝权限的情况
+
+```
+         EasyPermissionDialog.build(this)
+                            .permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE)
+                            .typeNeverAsk(1, new EasyPermissionDialog.GoSettingCallback() {
+                                @Override
+                                public void onDeny() {
+                                }
+
+                            })
+                            .show();
+```
