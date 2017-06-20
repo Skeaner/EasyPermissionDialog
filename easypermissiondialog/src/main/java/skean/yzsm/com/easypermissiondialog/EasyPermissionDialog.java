@@ -9,7 +9,6 @@ import android.provider.Settings;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -17,9 +16,6 @@ import com.afollestad.materialdialogs.Theme;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 import static skean.yzsm.com.easypermissiondialog.EasyPermissionDialog.DenyType.*;
 import static skean.yzsm.com.easypermissiondialog.EasyPermissionDialog.ContainerType.*;
@@ -45,15 +41,10 @@ public class EasyPermissionDialog {
         int FRAGMENT_V4 = 3;
     }
 
-    public interface RequestCallback {
-        void onDeny();
-
-        void onAllow();
+    public interface Callback {
+        void onResult(boolean allow);
     }
 
-    public interface GoSettingCallback {
-        void onDeny();
-    }
 
     private Context context;
     private Object container;
@@ -66,8 +57,7 @@ public class EasyPermissionDialog {
     private String positiveText;
     private String negativeText;
     private Theme theme;
-    private RequestCallback requestCallback;
-    private GoSettingCallback goSettingCallback;
+    private Callback callback;
     private String[] permissions;
 
     public static EasyPermissionDialog build(Activity activity) {
@@ -93,16 +83,16 @@ public class EasyPermissionDialog {
         return this;
     }
 
-    public EasyPermissionDialog typeTemporaryDeny(RequestCallback requestCallback) {
+    public EasyPermissionDialog typeTemporaryDeny(Callback callback) {
         denyType = TEMP;
-        this.requestCallback = requestCallback;
+        this.callback = callback;
         return this;
     }
 
-    public EasyPermissionDialog typeNeverAsk(int requestCode, GoSettingCallback goSettingCallback) {
+    public EasyPermissionDialog typeNeverAsk(int requestCode, Callback callback) {
         denyType = NEVER;
         this.requestCode = requestCode;
-        this.goSettingCallback = goSettingCallback;
+        this.callback = callback;
         return this;
     }
 
@@ -197,16 +187,17 @@ public class EasyPermissionDialog {
                        switch (which) {
                            case POSITIVE:
                                if (denyType == TEMP) {
-                                   if (requestCallback != null) requestCallback.onAllow();
+                                   if (callback != null) callback.onResult(true);
                                } else {
+                                   if (callback != null) callback.onResult(true);
                                    goToSetting();
                                }
                                break;
                            case NEGATIVE:
                                if (denyType == TEMP) {
-                                   if (requestCallback != null) requestCallback.onDeny();
+                                   if (callback != null) callback.onResult(false);
                                } else {
-                                   if (goSettingCallback != null) goSettingCallback.onDeny();
+                                   if (callback != null) callback.onResult(false);
                                }
                                break;
                            case NEUTRAL:
