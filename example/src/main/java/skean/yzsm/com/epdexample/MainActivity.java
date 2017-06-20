@@ -34,16 +34,11 @@ public class MainActivity extends AppCompatActivity {
                             .permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE)
                             .typeTemporaryDeny(new EasyPermissionDialog.Callback() {
                                 @Override
-                                public void onDeny() {
-                                    Toast.makeText(getApplicationContext(), "拒绝", Toast.LENGTH_SHORT)
-                                         .show();
+                                public void onResult(boolean allow) {
+                                    if (allow) Toast.makeText(getApplicationContext(), "允许", Toast.LENGTH_SHORT).show();
+                                    else Toast.makeText(getApplicationContext(), "拒绝", Toast.LENGTH_SHORT).show();
                                 }
 
-                                @Override
-                                public void onAllow() {
-                                    Toast.makeText(getApplicationContext(), "允许", Toast.LENGTH_SHORT)
-                                         .show();
-                                }
                             })
                             .show();
     }
@@ -51,11 +46,11 @@ public class MainActivity extends AppCompatActivity {
     public void neverClick(View view) {
         EasyPermissionDialog.build(this)
                             .permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE)
-                            .typeNeverAsk(1, new EasyPermissionDialog.GoSettingCallback() {
+                            .typeNeverAsk(1, new EasyPermissionDialog.Callback() {
                                 @Override
-                                public void onDeny() {
-                                    Toast.makeText(getApplicationContext(), "拒绝", Toast.LENGTH_SHORT)
-                                         .show();
+                                public void onResult(boolean allow) {
+                                    if (allow) Toast.makeText(getApplicationContext(), "允许", Toast.LENGTH_SHORT).show();
+                                    else Toast.makeText(getApplicationContext(), "拒绝", Toast.LENGTH_SHORT).show();
                                 }
 
                             })
