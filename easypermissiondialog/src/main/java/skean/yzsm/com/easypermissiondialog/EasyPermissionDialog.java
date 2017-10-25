@@ -148,16 +148,16 @@ public class EasyPermissionDialog {
     }
 
     private void init() {
-        if (title == null) title = context.getString(R.string.permissionDenyTitle);
+        if (title == null) title = context.getString(R.string.epdPermissionDenyTitle);
         if (content == null) {
-            if (denyType == TEMP) content = context.getString(R.string.requestPermissionTips, permissionText());
-            else content = context.getString(R.string.permissionNeverGrantedTips, permissionText());
+            if (denyType == TEMP) content = context.getString(R.string.epdRequestPermissionTips, permissionText());
+            else content = context.getString(R.string.epdPermissionNeverGrantedTips, permissionText());
         }
         if (positiveText == null) {
-            if (denyType == TEMP) positiveText = context.getString(R.string.requestGive);
-            else positiveText = context.getString(R.string.goSetting);
+            if (denyType == TEMP) positiveText = context.getString(R.string.epdRequestGive);
+            else positiveText = context.getString(R.string.epdGoSetting);
         }
-        if (negativeText == null) negativeText = context.getString(R.string.requestDeny);
+        if (negativeText == null) negativeText = context.getString(R.string.epdRequestDeny);
         if (theme == null) theme = Theme.LIGHT;
     }
 

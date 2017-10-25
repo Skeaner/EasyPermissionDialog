@@ -3,15 +3,15 @@
     <!--*******************************************************************-->
     <!--* 权限设置 -->
     <!--*******************************************************************-->
-    <string name="permissionDenyTitle">Permission Granted Fail</string>
-    <string name="permissionNeverGrantedTips">
+    <string name="epdPermissionDenyTitle">Permission Granted Fail</string>
+    <string name="epdPermissionNeverGrantedTips">
         For the function to work properly, we need you to give us some permissions<xliff:g id="1">%1$s </xliff:g>,
         please give us these permissions on the application settings page, otherwise the app may cause issues.
     </string>
-    <string name="requestPermissionTips">
+    <string name="epdRequestPermissionTips">
         For the function to work properly, we need you to give us some permissions<xliff:g id="1">%1$s</xliff:g>,
          please give us these permissions.</string>
-    <string name="goSetting">Go Setting</string>
-    <string name="requestDeny">Deny</string>
-    <string name="requestGive">Allow</string>
+    <string name="epdGoSetting">Go Setting</string>
+    <string name="epdRequestDeny">Deny</string>
+    <string name="epdRequestGive">Allow</string>
 </resources>
