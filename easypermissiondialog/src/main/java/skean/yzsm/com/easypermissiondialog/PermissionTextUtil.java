@@ -36,6 +36,9 @@ public class PermissionTextUtil {
             case Manifest.permission.ACCESS_COARSE_LOCATION:
                 desc = isChinese() ? "精确定位" : "Access Coarse Location";
                 break;
+            case Manifest.permission.ACCESS_BACKGROUND_LOCATION:
+                desc = isChinese() ? "后台定位" : "Access Background Location";
+                break;
             case Manifest.permission.RECORD_AUDIO:
                 desc = isChinese() ? "录音" : "Record Audio";
                 break;
@@ -90,10 +93,8 @@ public class PermissionTextUtil {
 
     public static boolean isChinese() {
         Locale locale = Locale.getDefault();
-        return locale.getLanguage()
-                     .equals("zh") && //
-                locale.getCountry()
-                      .equals("CN");
+        return locale.getLanguage().equals("zh") && //
+                locale.getCountry().equals("CN");
     }
 
 }

@@ -1,19 +1,14 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.novoda.bintray-release'
 
-group = "me.skean" // #修改# // 组名
-version = "1.4"   // #修改# // 这里是aar的版本号
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 25
-        versionCode 4
-        versionName "1.4"
+        targetSdkVersion 28
     }
     buildTypes {
         release {
@@ -25,93 +20,19 @@ android {
 
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.afollestad.material-dialogs:core:0.9.4.5'
+    api fileTree(dir: 'libs', include: ['*.jar'])
+    api 'com.afollestad.material-dialogs:core:0.9.6.0'
 }
 
 
-def siteUrl = 'https://gitee.com/skean/easypermissiondialog' // #修改# // 项目的主页地址
-def gitUrl = 'https://gitee.com/skean/easypermissiondialog.git' // #修改# // 项目 git 地址
-
-install {
-    repositories.mavenInstaller {
-        pom {
-            project {
-                packaging 'aar'
-                name 'EasyPermissionDialog' // #修改# // 标题
-                url siteUrl
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id 'skean'                                           // #修改# // 你的userid，昵称
-                        name 'skean'                                       // #修改# // 用户名
-                        email 'nervskean@gmail.com'                               // #修改# // 邮箱
-                    }
-                }
-                scm {
-                    connection gitUrl
-                    developerConnection gitUrl
-                    url siteUrl
-                }
-            }
-        }
-    }
-}
-
-
-
-
-//下面是几个打包的操作, 照抄即可
-
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    options {
-        encoding 'utf-8'
-        charSet 'utf-8'
-        links 'http://docs.oracle.com/javase/7/docs/api/'
-        linksOffline "https://developer.android.com/reference", "${android.sdkDirectory}/docs/reference"
-    }
-    exclude '**/BuildConfig.java'
-    exclude '**/R.java'
-    options.encoding = 'utf-8'
-    failOnError false
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives javadocJar
-    archives sourcesJar
-}
-
-
-bintray {
-    Properties properties = new Properties()
-    properties.load(project.file('bintray.properties').newDataInputStream())
-    user = properties.getProperty("bintrayUser")
-    key = properties.getProperty("bintrayApikey")
-    // 上面两个 user和key 需要留意一下，在bintray.properites 里面配置的
-    configurations = ['archives']
-    pkg {
-        repo = "maven"  // #修改# //  在 bintray 上面maven库的名字
-        name = "EasyPermissionDialog" // #修改# //  在 bintray 上面的项目名字
-        websiteUrl = siteUrl
-        vcsUrl = gitUrl
-        licenses = ["Apache-2.0"]
-        publish = true
-    }
+//todo 修改发布的信息
+//上传的指令 gradlew clean build bintrayUpload -PbintrayUser=用户名 -PbintrayKey=密匙 -PdryRun=false
+publish {
+    userOrg = 'skean'                 //bintray注册的用户名
+    groupId = 'me.skean'                //compile引用时的第1部分groupId
+    artifactId = 'EasyPermissionDialog'        //compile引用时的第2部分项目名
+    publishVersion = '1.5'        //compile引用时的第3部分版本号
+    desc = '快速权限提示框'
+    website = 'https://gitee.com/skean/easypermissiondialog'
+    repository="${website}.git"
 }
