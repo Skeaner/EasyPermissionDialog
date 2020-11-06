@@ -2,17 +2,17 @@ package skean.yzsm.com.easypermissiondialog;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -45,7 +45,6 @@ public class EasyPermissionDialog {
         void onResult(boolean allow);
     }
 
-
     private Context context;
     private Object container;
     @ContainerType
@@ -56,7 +55,7 @@ public class EasyPermissionDialog {
     private String content;
     private String positiveText;
     private String negativeText;
-    private Theme theme;
+    private boolean darkTheme = false;
     private Callback callback;
     private String[] permissions;
 
@@ -136,8 +135,13 @@ public class EasyPermissionDialog {
         return this;
     }
 
-    public EasyPermissionDialog theme(Theme theme) {
-        this.theme = theme;
+    public EasyPermissionDialog darkTheme() {
+        darkTheme = true;
+        return this;
+    }
+
+    public EasyPermissionDialog lightTheme() {
+        darkTheme = false;
         return this;
     }
 
@@ -158,7 +162,6 @@ public class EasyPermissionDialog {
             else positiveText = context.getString(R.string.epdGoSetting);
         }
         if (negativeText == null) negativeText = context.getString(R.string.epdRequestDeny);
-        if (theme == null) theme = Theme.LIGHT;
     }
 
     private String permissionText() {
@@ -174,34 +177,31 @@ public class EasyPermissionDialog {
     }
 
     private void showDialog() {
-        MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
-        builder.theme(theme)
-               .title(title)
-               .content(content)
-               .cancelable(false)
-               .positiveText(positiveText)
-               .negativeText(negativeText)
-               .onAny(new MaterialDialog.SingleButtonCallback() {
+        int theme = darkTheme ? R.style.Theme_MaterialComponents_Dialog_Alert : R.style.Theme_MaterialComponents_Light_Dialog_Alert;
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context, theme);
+        builder.setTitle(title)
+               .setMessage(content)
+               .setCancelable(false)
+               .setPositiveButton(positiveText, new DialogInterface.OnClickListener() {
                    @Override
-                   public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                       switch (which) {
-                           case POSITIVE:
-                               if (denyType == TEMP) {
-                                   if (callback != null) callback.onResult(true);
-                               } else {
-                                   if (callback != null) callback.onResult(true);
-                                   goToSetting();
-                               }
-                               break;
-                           case NEGATIVE:
-                               if (denyType == TEMP) {
-                                   if (callback != null) callback.onResult(false);
-                               } else {
-                                   if (callback != null) callback.onResult(false);
-                               }
-                               break;
-                           case NEUTRAL:
-                               break;
+                   public void onClick(DialogInterface dialog, int which) {
+                       if (denyType == TEMP) {
+                           if (callback != null) callback.onResult(true);
+                       }
+                       else {
+                           if (callback != null) callback.onResult(true);
+                           goToSetting();
+                       }
+                   }
+               })
+               .setNegativeButton(negativeText, new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialog, int which) {
+                       if (denyType == TEMP) {
+                           if (callback != null) callback.onResult(false);
+                       }
+                       else {
+                           if (callback != null) callback.onResult(false);
                        }
                    }
                })
@@ -216,18 +216,21 @@ public class EasyPermissionDialog {
                 intent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
                 intent.putExtra("extra_pkgname", context.getPackageName());
                 startSettingActivity(intent);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 try {
                     // MIUI 5/6/7
                     Intent intent = new Intent("miui.intent.action.APP_PERM_EDITOR");
                     intent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.AppPermissionsEditorActivity");
                     intent.putExtra("extra_pkgname", context.getPackageName());
                     startSettingActivity(intent);
-                } catch (Exception e1) {
+                }
+                catch (Exception e1) {
                     goToNormalSetting();
                 }
             }
-        } else {
+        }
+        else {
             goToNormalSetting();
         }
     }
@@ -238,7 +241,8 @@ public class EasyPermissionDialog {
             Uri uri = Uri.fromParts("package", context.getPackageName(), null);
             intent.setData(uri);
             startSettingActivity(intent);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -263,11 +267,11 @@ public class EasyPermissionDialog {
                     ((android.app.Fragment) container).startActivityForResult(intent, requestCode);
                     break;
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
     }
-
 
 }

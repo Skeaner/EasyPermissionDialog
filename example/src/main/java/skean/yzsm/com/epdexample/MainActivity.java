@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void tempClick(View view) {
         EasyPermissionDialog.build(this)
+                            .darkTheme()
                             .permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE)
                             .typeTemporaryDeny(new EasyPermissionDialog.Callback() {
                                 @Override
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void neverClick(View view) {
         EasyPermissionDialog.build(this)
+                            .lightTheme()
                             .permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE)
                             .typeNeverAsk(1, new EasyPermissionDialog.Callback() {
                                 @Override
