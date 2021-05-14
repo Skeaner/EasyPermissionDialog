@@ -1,6 +1,15 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'com.github.dcendents.android-maven'
+group='com.github.Skeaner'
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+    }
+}
 
 android {
     compileSdkVersion 29
@@ -24,15 +33,3 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
 }
 
-
-//todo 修改发布的信息
-//上传的指令 gradlew clean build bintrayUpload -PbintrayUser=用户名 -PbintrayKey=密匙 -PdryRun=false
-publish {
-    userOrg = 'skean'                 //bintray注册的用户名
-    groupId = 'me.skean'                //compile引用时的第1部分groupId
-    artifactId = 'EasyPermissionDialog'        //compile引用时的第2部分项目名
-    publishVersion = '1.6'        //compile引用时的第3部分版本号
-    desc = '快速权限提示框'
-    website = 'https://gitee.com/skean/easypermissiondialog'
-    repository="${website}.git"
-}
