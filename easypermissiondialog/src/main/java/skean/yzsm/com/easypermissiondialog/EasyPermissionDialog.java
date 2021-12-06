@@ -7,12 +7,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import android.support.annotation.IntDef;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -178,7 +175,7 @@ public class EasyPermissionDialog {
 
     private void showDialog() {
         int theme = darkTheme ? R.style.Theme_MaterialComponents_Dialog_Alert : R.style.Theme_MaterialComponents_Light_Dialog_Alert;
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context, theme);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, theme);
         builder.setTitle(title)
                .setMessage(content)
                .setCancelable(false)
