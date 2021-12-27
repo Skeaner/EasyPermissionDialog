@@ -2,12 +2,15 @@ package skean.yzsm.com.epdexample;
 
 import android.Manifest;
 import android.content.res.Resources;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Toast;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 import skean.yzsm.com.easypermissiondialog.EasyPermissionDialog;
@@ -32,7 +35,8 @@ public class MainActivity extends AppCompatActivity {
     public void tempClick(View view) {
         EasyPermissionDialog.build(this)
                             .darkTheme()
-                            .permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE)
+                            .functionDesc("拯救宇宙")
+                            .permissions(Arrays.asList(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE))
                             .typeTemporaryDeny(new EasyPermissionDialog.Callback() {
                                 @Override
                                 public void onResult(boolean allow) {

@@ -11,11 +11,11 @@ import android.provider.Settings;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 import static skean.yzsm.com.easypermissiondialog.EasyPermissionDialog.DenyType.*;
 import static skean.yzsm.com.easypermissiondialog.EasyPermissionDialog.ContainerType.*;
@@ -53,6 +53,7 @@ public class EasyPermissionDialog {
     private int denyType;
     private String title;
     private String content;
+    private String functionDesc;
     private String positiveText;
     private String negativeText;
     private boolean darkTheme = false;
@@ -82,6 +83,11 @@ public class EasyPermissionDialog {
         return this;
     }
 
+    public EasyPermissionDialog permissions(List<String> permissions) {
+        this.permissions = permissions.toArray(new String[]{});
+        return this;
+    }
+
     public EasyPermissionDialog typeTemporaryDeny(Callback callback) {
         denyType = TEMP;
         this.callback = callback;
@@ -106,12 +112,22 @@ public class EasyPermissionDialog {
     }
 
     public EasyPermissionDialog content(String content) {
-        this.title = content;
+        this.content = content;
         return this;
     }
 
     public EasyPermissionDialog content(int contentRes) {
         content = context.getString(contentRes);
+        return this;
+    }
+
+    public EasyPermissionDialog functionDesc(String functionDesc) {
+        this.functionDesc = functionDesc;
+        return this;
+    }
+
+    public EasyPermissionDialog functionDesc(int functionDescRes) {
+        functionDesc = context.getString(functionDescRes);
         return this;
     }
 
@@ -153,9 +169,10 @@ public class EasyPermissionDialog {
 
     private void init() {
         if (title == null) title = context.getString(R.string.epdPermissionDenyTitle);
+        if (functionDesc == null) functionDesc = context.getString(R.string.epdFunctionDesc);
         if (content == null) {
-            if (denyType == TEMP) content = context.getString(R.string.epdRequestPermissionTips, permissionText());
-            else content = context.getString(R.string.epdPermissionNeverGrantedTips, permissionText());
+            if (denyType == TEMP) content = context.getString(R.string.epdRequestPermissionTips, functionDesc, permissionText());
+            else content = context.getString(R.string.epdPermissionNeverGrantedTips, functionDesc, permissionText());
         }
         if (positiveText == null) {
             if (denyType == TEMP) positiveText = context.getString(R.string.epdRequestGive);

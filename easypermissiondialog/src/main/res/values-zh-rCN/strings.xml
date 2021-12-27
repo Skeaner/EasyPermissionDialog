@@ -4,9 +4,12 @@
     <!--*******************************************************************-->
 
     <string name="epdPermissionDenyTitle">权限获取失败</string>
-    <string name="epdPermissionNeverGrantedTips">为了功能正常运行, 我们需要您授予权限<xliff:g id="1">%1$s</xliff:g>, 请到应用设置页面授予我们这些权限, 否则程序无法正常运行.</string>
-    <string name="epdRequestPermissionTips">为了功能正常运行, 我们需要您授予权限<xliff:g id="1">%1$s</xliff:g>, 请授予我们这些权限.</string>
+    <string name="epdPermissionNeverGrantedTips">为了<xliff:g id="1">%1$s </xliff:g>正常运行, 我们需要您授予权限<xliff:g id="2">%2$s</xliff:g>,
+        请到应用设置页面授予我们这些权限, 否则程序无法正常运行.</string>
+    <string name="epdRequestPermissionTips">为了<xliff:g id="1">%1$s </xliff:g>正常运行, 我们需要您授予权限<xliff:g id="2">%2$s</xliff:g>,
+        请授予我们这些权限.</string>
     <string name="epdGoSetting">去设置</string>
     <string name="epdRequestDeny">拒绝</string>
     <string name="epdRequestGive">授权</string>
+    <string name="epdFunctionDesc">功能</string>
 </resources>
