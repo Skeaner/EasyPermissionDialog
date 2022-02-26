@@ -9,6 +9,8 @@ import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.IntDef;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 
 import java.lang.annotation.Retention;
@@ -16,7 +18,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 import static skean.yzsm.com.easypermissiondialog.EasyPermissionDialog.DenyType.*;
-import static skean.yzsm.com.easypermissiondialog.EasyPermissionDialog.ContainerType.*;
 
 /**
  * 权限设置Dialog
@@ -31,23 +32,12 @@ public class EasyPermissionDialog {
         int TEMP = 2;
     }
 
-    @IntDef({ACTIVITY, FRAGMENT, ANDROIDX})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ContainerType {
-        int ACTIVITY = 1;
-        int FRAGMENT = 2;
-        int ANDROIDX = 3;
-    }
-
     public interface Callback {
         void onResult(boolean allow);
     }
 
     private Context context;
-    private Object container;
-    @ContainerType
-    private int containerType;
-    private int requestCode;
+    private FragmentManager fragmentManager;
     private int denyType;
     private String title;
     private String content;
@@ -58,21 +48,16 @@ public class EasyPermissionDialog {
     private Callback callback;
     private String[] permissions;
 
-    public static EasyPermissionDialog build(Activity activity) {
-        return new EasyPermissionDialog(activity, ACTIVITY, activity);
+    public static EasyPermissionDialog build(FragmentActivity activity) {
+        return new EasyPermissionDialog(activity.getSupportFragmentManager(), activity);
     }
 
     public static EasyPermissionDialog build(Fragment fragment) {
-        return new EasyPermissionDialog(fragment, ANDROIDX, fragment.getActivity());
+        return new EasyPermissionDialog(fragment.getChildFragmentManager(), fragment.requireContext());
     }
 
-    public static EasyPermissionDialog build(android.app.Fragment fragment) {
-        return new EasyPermissionDialog(fragment, FRAGMENT, fragment.getActivity());
-    }
-
-    private EasyPermissionDialog(Object container, @ContainerType int containerType, Context context) {
-        this.container = container;
-        this.containerType = containerType;
+    private EasyPermissionDialog(FragmentManager fragmentManager, Context context) {
+        this.fragmentManager = fragmentManager;
         this.context = context;
     }
 
@@ -92,9 +77,8 @@ public class EasyPermissionDialog {
         return this;
     }
 
-    public EasyPermissionDialog typeNeverAsk(int requestCode, Callback callback) {
+    public EasyPermissionDialog typeNeverAsk(Callback callback) {
         denyType = NEVER;
-        this.requestCode = requestCode;
         this.callback = callback;
         return this;
     }
@@ -204,7 +188,6 @@ public class EasyPermissionDialog {
                            if (callback != null) callback.onResult(true);
                        }
                        else {
-                           if (callback != null) callback.onResult(true);
                            goToSetting();
                        }
                    }
@@ -271,17 +254,9 @@ public class EasyPermissionDialog {
 
     private void startSettingActivity(Intent intent) throws Exception {
         try {
-            switch (containerType) {
-                case ContainerType.ACTIVITY:
-                    ((Activity) container).startActivityForResult(intent, requestCode);
-                    break;
-                case ContainerType.ANDROIDX:
-                    ((Fragment) container).startActivityForResult(intent, requestCode);
-                    break;
-                case ContainerType.FRAGMENT:
-                    ((android.app.Fragment) container).startActivityForResult(intent, requestCode);
-                    break;
-            }
+            Fragment fragment = new EasyPermissionDialogFragment(callback, permissions);
+            fragmentManager.beginTransaction().add(fragment, fragment.toString()).commitNow();
+            fragment.startActivityForResult(intent, 1);
         }
         catch (Exception e) {
             e.printStackTrace();

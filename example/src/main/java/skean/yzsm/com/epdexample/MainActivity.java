@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         EasyPermissionDialog.build(this)
                             .lightTheme()
                             .permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE)
-                            .typeNeverAsk(1, new EasyPermissionDialog.Callback() {
+                            .typeNeverAsk(new EasyPermissionDialog.Callback() {
                                 @Override
                                 public void onResult(boolean allow) {
                                     if (allow) Toast.makeText(getApplicationContext(), "允许", Toast.LENGTH_SHORT).show();
