@@ -9,16 +9,14 @@ import android.provider.Settings;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import androidx.annotation.IntDef;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-
-import static skean.yzsm.com.easypermissiondialog.EasyPermissionDialog.DenyType.*;
+import java.util.Map;
 
 /**
  * 权限设置Dialog
@@ -26,28 +24,25 @@ import static skean.yzsm.com.easypermissiondialog.EasyPermissionDialog.DenyType.
 
 public class EasyPermissionDialog {
 
-    @IntDef({NEVER, TEMP})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface DenyType {
-        int NEVER = 1;
-        int TEMP = 2;
-    }
-
     public interface Callback {
         void onResult(boolean allow);
     }
 
     private Context context;
     private FragmentManager fragmentManager;
-    private int denyType;
+    private boolean doNotAskAgain;
     private String title;
     private String content;
-    private String functionDesc;
+    private Map<String, String> permissionDesc = new HashMap<>();
     private String positiveText;
     private String negativeText;
     private boolean darkTheme = false;
+    private boolean autoGoToSetting = true;
+    private boolean cancelable = true;
     private Callback callback;
-    private String[] permissions;
+    private DialogInterface.OnDismissListener dismissListener;
+
+    private List<String> permissions;
 
     public static EasyPermissionDialog build(FragmentActivity activity) {
         return new EasyPermissionDialog(activity.getSupportFragmentManager(), activity);
@@ -63,24 +58,12 @@ public class EasyPermissionDialog {
     }
 
     public EasyPermissionDialog permissions(String... permissions) {
-        this.permissions = permissions;
+        this.permissions = Arrays.asList(permissions);
         return this;
     }
 
     public EasyPermissionDialog permissions(List<String> permissions) {
-        this.permissions = permissions.toArray(new String[]{});
-        return this;
-    }
-
-    public EasyPermissionDialog typeTemporaryDeny(Callback callback) {
-        denyType = TEMP;
-        this.callback = callback;
-        return this;
-    }
-
-    public EasyPermissionDialog typeNeverAsk(Callback callback) {
-        denyType = NEVER;
-        this.callback = callback;
+        this.permissions = permissions;
         return this;
     }
 
@@ -94,23 +77,8 @@ public class EasyPermissionDialog {
         return this;
     }
 
-    public EasyPermissionDialog content(String content) {
-        this.content = content;
-        return this;
-    }
-
-    public EasyPermissionDialog content(int contentRes) {
-        content = context.getString(contentRes);
-        return this;
-    }
-
-    public EasyPermissionDialog functionDesc(String functionDesc) {
-        this.functionDesc = functionDesc;
-        return this;
-    }
-
-    public EasyPermissionDialog functionDesc(int functionDescRes) {
-        functionDesc = context.getString(functionDescRes);
+    public EasyPermissionDialog permissionDesc(Map<String, String> permissionDesc) {
+        this.permissionDesc = permissionDesc;
         return this;
     }
 
@@ -144,36 +112,40 @@ public class EasyPermissionDialog {
         return this;
     }
 
-    public void show() {
-        if (denyType == 0) throw new RuntimeException("请指定权限的拒绝类型");
+    public EasyPermissionDialog autoGoToSetting(boolean autoGoToSetting) {
+        this.autoGoToSetting = autoGoToSetting;
+        return this;
+    }
+
+    public EasyPermissionDialog cancelable(boolean cancelable) {
+        this.cancelable = cancelable;
+        return this;
+    }
+
+    public EasyPermissionDialog onDismiss(DialogInterface.OnDismissListener dismissListener) {
+        this.dismissListener = dismissListener;
+        return this;
+    }
+
+    public void show(boolean doNotAskAgain, Callback callback) {
+        this.doNotAskAgain = doNotAskAgain;
+        this.callback = callback;
         init();
         showDialog();
     }
 
     private void init() {
         if (title == null) title = context.getString(R.string.epdPermissionDenyTitle);
-        if (functionDesc == null) functionDesc = context.getString(R.string.epdFunctionDesc);
         if (content == null) {
-            if (denyType == TEMP) content = context.getString(R.string.epdRequestPermissionTips, functionDesc, permissionText());
-            else content = context.getString(R.string.epdPermissionNeverGrantedTips, functionDesc, permissionText());
+            String desc = PermissionDescriptionConvert.getPermissionDescription(context, permissions, this.permissionDesc);
+            if (!doNotAskAgain) content = context.getString(R.string.epdRequestPermissionTips, desc);
+            else content = context.getString(R.string.epdPermissionNeverGrantedTips, desc);
         }
         if (positiveText == null) {
-            if (denyType == TEMP) positiveText = context.getString(R.string.epdRequestGive);
+            if (!doNotAskAgain) positiveText = context.getString(R.string.epdRequestGive);
             else positiveText = context.getString(R.string.epdGoSetting);
         }
         if (negativeText == null) negativeText = context.getString(R.string.epdRequestDeny);
-    }
-
-    private String permissionText() {
-        if (permissions == null || permissions.length == 0) return "";
-        else {
-            StringBuilder sb = new StringBuilder(": ");
-            for (String permission : permissions) {
-                sb.append(PermissionTextUtil.getDescription(permission)).append("/");
-            }
-            sb.deleteCharAt(sb.length() - 1);
-            return sb.toString();
-        }
     }
 
     private void showDialog() {
@@ -181,29 +153,29 @@ public class EasyPermissionDialog {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context, theme);
         builder.setTitle(title)
                .setMessage(content)
-               .setCancelable(false)
+               .setCancelable(cancelable)
                .setPositiveButton(positiveText, new DialogInterface.OnClickListener() {
                    @Override
                    public void onClick(DialogInterface dialog, int which) {
-                       if (denyType == TEMP) {
+                       if (!doNotAskAgain) {
                            if (callback != null) callback.onResult(true);
                        }
                        else {
-                           goToSetting();
+                           if (autoGoToSetting) goToSetting();
+                           else if (callback != null) callback.onResult(true);
                        }
+
                    }
                })
                .setNegativeButton(negativeText, new DialogInterface.OnClickListener() {
                    @Override
                    public void onClick(DialogInterface dialog, int which) {
-                       if (denyType == TEMP) {
-                           if (callback != null) callback.onResult(false);
-                       }
-                       else {
-                           if (callback != null) callback.onResult(false);
+                       if (callback != null) {
+                           callback.onResult(false);
                        }
                    }
                })
+               .setOnDismissListener(dismissListener)
                .show();
     }
 
@@ -255,7 +227,7 @@ public class EasyPermissionDialog {
 
     private void startSettingActivity(Intent intent) throws Exception {
         try {
-            Fragment fragment = new EasyPermissionDialogFragment(callback, permissions);
+            Fragment fragment = new ToSettingFakeFragment(callback, permissions);
             fragmentManager.beginTransaction().add(fragment, fragment.toString()).commitNow();
             fragment.startActivityForResult(intent, 1);
         }

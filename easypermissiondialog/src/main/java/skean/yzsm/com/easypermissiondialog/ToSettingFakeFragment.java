@@ -2,6 +2,8 @@ package skean.yzsm.com.easypermissiondialog;
 
 import android.content.Intent;
 
+import java.util.List;
+
 import androidx.annotation.Nullable;
 import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.Fragment;
@@ -9,17 +11,17 @@ import androidx.fragment.app.Fragment;
 /**
  * Created by Skean on 22/2/27.
  */
-public class EasyPermissionDialogFragment extends Fragment {
+public class ToSettingFakeFragment extends Fragment {
 
     private EasyPermissionDialog.Callback innerCallback;
-    private String[] permissions;
+    private List<String> permissions;
 
-    public EasyPermissionDialogFragment(EasyPermissionDialog.Callback innerCallback, String[] permissions) {
+    public ToSettingFakeFragment(EasyPermissionDialog.Callback innerCallback, List<String> permissions) {
         this.innerCallback = innerCallback;
         this.permissions = permissions;
     }
 
-    public EasyPermissionDialogFragment() {
+    public ToSettingFakeFragment() {
     }
 
     @Override

@@ -11,17 +11,22 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Locale;
 
 import skean.yzsm.com.easypermissiondialog.EasyPermissionDialog;
 
 public class MainActivity extends AppCompatActivity {
 
+    private HashMap<String, String> permissionDesc = new HashMap<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         changeEN();
+        permissionDesc.put(Manifest.permission.WRITE_EXTERNAL_STORAGE, "为了存储图片");
+        permissionDesc.put(Manifest.permission.CALL_PHONE, "为了打电话");
     }
 
     private void changeEN() {
@@ -35,32 +40,29 @@ public class MainActivity extends AppCompatActivity {
     public void tempClick(View view) {
         EasyPermissionDialog.build(this)
                             .darkTheme()
-                            .functionDesc("拯救宇宙")
+                            .permissionDesc(permissionDesc)
                             .permissions(Arrays.asList(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE))
-                            .typeTemporaryDeny(new EasyPermissionDialog.Callback() {
+                            .show(false, new EasyPermissionDialog.Callback() {
                                 @Override
                                 public void onResult(boolean allow) {
                                     if (allow) Toast.makeText(getApplicationContext(), "允许", Toast.LENGTH_SHORT).show();
                                     else Toast.makeText(getApplicationContext(), "拒绝", Toast.LENGTH_SHORT).show();
                                 }
-
-                            })
-                            .show();
+                            });
     }
 
     public void neverClick(View view) {
         EasyPermissionDialog.build(this)
                             .lightTheme()
+                            .permissionDesc(permissionDesc)
                             .permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE)
-                            .typeNeverAsk(new EasyPermissionDialog.Callback() {
+                            .show(true, new EasyPermissionDialog.Callback() {
                                 @Override
                                 public void onResult(boolean allow) {
                                     if (allow) Toast.makeText(getApplicationContext(), "允许", Toast.LENGTH_SHORT).show();
                                     else Toast.makeText(getApplicationContext(), "拒绝", Toast.LENGTH_SHORT).show();
                                 }
-
-                            })
-                            .show();
+                            });
 
     }
 

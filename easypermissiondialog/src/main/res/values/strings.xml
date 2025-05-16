@@ -4,15 +4,12 @@
     <!--* 权限设置 -->
     <!--*******************************************************************-->
     <string name="epdPermissionDenyTitle">Permission Granted Fail</string>
-    <string name="epdPermissionNeverGrantedTips">
-        For the <xliff:g id="1">%1$s </xliff:g> to work properly, we need you to give us some permissions<xliff:g id="2">%2$s
-    </xliff:g>,
-        please give us these permissions on the application settings page, otherwise the app may cause issues.
+    <string name="epdPermissionNeverGrantedTips">In order to app work properly, we need to grant this permissions:
+        \n<xliff:g id="1">%1$s</xliff:g>
+        \nplease go to the application settings page to enable it.
     </string>
-    <string name="epdRequestPermissionTips">
-        For the <xliff:g id="1">%1$s </xliff:g> to work properly, we need you to give us some permissions<xliff:g id="2">%2$s
-    </xliff:g>,
-         please give us these permissions.</string>
+    <string name="epdRequestPermissionTips">In order to app work properly, we need to grant this permissions:
+        \n<xliff:g id="1">%1$s</xliff:g></string>
     <string name="epdGoSetting">Go Setting</string>
     <string name="epdRequestDeny">Deny</string>
     <string name="epdRequestGive">Allow</string>
