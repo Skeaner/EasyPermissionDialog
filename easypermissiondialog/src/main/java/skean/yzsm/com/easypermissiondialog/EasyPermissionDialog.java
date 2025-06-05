@@ -77,6 +77,17 @@ public class EasyPermissionDialog {
         return this;
     }
 
+
+    public EasyPermissionDialog content(String content) {
+        this.content = content;
+        return this;
+    }
+
+    public EasyPermissionDialog content(int contentRes) {
+        content = context.getString(contentRes);
+        return this;
+    }
+
     public EasyPermissionDialog permissionDesc(Map<String, String> permissionDesc) {
         this.permissionDesc = permissionDesc;
         return this;
