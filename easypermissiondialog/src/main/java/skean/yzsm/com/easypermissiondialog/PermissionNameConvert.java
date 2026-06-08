@@ -1,329 +1,139 @@
 package skean.yzsm.com.easypermissiondialog;
 
 import android.content.Context;
-import android.os.Build;
-import android.util.ArrayMap;
 
-import java.util.ArrayList;
+import com.hjq.permissions.permission.PermissionNames;
+import com.hjq.permissions.permission.base.IPermission;
+
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 
-/**
- * author : Android 轮子哥
- * github : https://github.com/getActivity/XXPermissions
- * time   : 2022/06/11
- * desc   : 权限名称转换器
- */
 public final class PermissionNameConvert {
 
-    /**
-     * 获取权限名称
-     */
-    public static String getPermissionNames(Context context, List<String> permissions) {
+    public static String getPermissionNames(Context context, List<IPermission> permissions) {
         return listToString(context, permissionsToNames(context, permissions).values());
     }
 
-    /**
-     * String 列表拼接成一个字符串
-     */
     public static String listToString(Context context, Collection<String> hints) {
         if (hints == null || hints.isEmpty()) {
             return context.getString(R.string.common_permission_unknown);
         }
-
         StringBuilder builder = new StringBuilder();
         for (String text : hints) {
-            if (builder.length() == 0) {
-                builder.append(text);
-            }
-            else {
-                builder.append("、").append(text);
-            }
+            if (builder.length() > 0) builder.append("、");
+            builder.append(text);
         }
         return builder.toString();
     }
 
-    /**
-     * 将权限列表转换成对应名称列表
-     */
     @NonNull
-    public static LinkedHashMap<String, String> permissionsToNames(Context context, List<String> permissions) {
+    public static LinkedHashMap<String, String> permissionsToNames(Context context, List<IPermission> permissions) {
         LinkedHashMap<String, String> permissionNames = new LinkedHashMap<>();
-        if (context == null) {
-            return permissionNames;
-        }
-        if (permissions == null) {
-            return permissionNames;
-        }
-        for (String permission : permissions) {
-            switch (permission) {
-                case Permission.READ_EXTERNAL_STORAGE:
-                case Permission.WRITE_EXTERNAL_STORAGE: {
-                    String hint = context.getString(R.string.common_permission_storage);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
+        if (context == null || permissions == null) return permissionNames;
+
+        for (IPermission p : permissions) {
+            String hint = null;
+            switch (p.getPermissionName()) {
+                // 基础权限
+                case PermissionNames.CAMERA:
+                    hint = context.getString(R.string.common_permission_camera);
                     break;
-                }
-                case Permission.READ_MEDIA_IMAGES:
-                case Permission.READ_MEDIA_VIDEO:
-                case Permission.READ_MEDIA_VISUAL_USER_SELECTED: {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        String hint = context.getString(R.string.common_permission_image_and_video);
-                        if (!permissionNames.containsKey(hint)) {
-                            permissionNames.put(permission, hint);
-                        }
-                    }
+                case PermissionNames.RECORD_AUDIO:
+                    hint = context.getString(R.string.common_permission_microphone);
                     break;
-                }
-                case Permission.READ_MEDIA_AUDIO: {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        String hint = context.getString(R.string.common_permission_music_and_audio);
-                        if (!permissionNames.containsKey(hint)) {
-                            permissionNames.put(permission, hint);
-                        }
-                    }
+                case PermissionNames.READ_EXTERNAL_STORAGE:
+                case PermissionNames.WRITE_EXTERNAL_STORAGE:
+                    hint = context.getString(R.string.common_permission_storage);
                     break;
-                }
-                case Permission.CAMERA: {
-                    String hint = context.getString(R.string.common_permission_camera);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
+                case PermissionNames.ACCESS_FINE_LOCATION:
+                case PermissionNames.ACCESS_COARSE_LOCATION:
+                case PermissionNames.ACCESS_BACKGROUND_LOCATION:
+                    hint = context.getString(R.string.common_permission_location);
                     break;
-                }
-                case Permission.RECORD_AUDIO: {
-                    String hint = context.getString(R.string.common_permission_microphone);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
+
+                // 通信权限
+                case PermissionNames.READ_PHONE_STATE:
+                case PermissionNames.CALL_PHONE:
+                case PermissionNames.READ_PHONE_NUMBERS:
+                case PermissionNames.ANSWER_PHONE_CALLS:
+                    hint = context.getString(R.string.common_permission_phone);
                     break;
-                }
-                case Permission.ACCESS_FINE_LOCATION:
-                case Permission.ACCESS_COARSE_LOCATION:
-                case Permission.ACCESS_BACKGROUND_LOCATION: {
-                    String hint;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !permissions.contains(Permission.ACCESS_FINE_LOCATION) && !permissions.contains(
-                            Permission.ACCESS_COARSE_LOCATION)) {
-                        hint = context.getString(R.string.common_permission_location_background);
-                    }
-                    else {
-                        hint = context.getString(R.string.common_permission_location);
-                    }
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
+                case PermissionNames.SEND_SMS:
+                case PermissionNames.READ_SMS:
+                case PermissionNames.RECEIVE_SMS:
+                    hint = context.getString(R.string.common_permission_sms);
                     break;
-                }
-                case Permission.BODY_SENSORS:
-                case Permission.BODY_SENSORS_BACKGROUND: {
-                    String hint;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !permissions.contains(Permission.BODY_SENSORS)) {
-                        hint = context.getString(R.string.common_permission_body_sensors_background);
-                    }
-                    else {
-                        hint = context.getString(R.string.common_permission_body_sensors);
-                    }
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
+
+                // 蓝牙 & WIFI
+                case PermissionNames.BLUETOOTH_SCAN:
+                case PermissionNames.BLUETOOTH_CONNECT:
+                case PermissionNames.BLUETOOTH_ADVERTISE:
+                case PermissionNames.NEARBY_WIFI_DEVICES:
+                    hint = context.getString(R.string.common_permission_nearby_devices);
                     break;
-                }
-                case Permission.BLUETOOTH_SCAN:
-                case Permission.BLUETOOTH_CONNECT:
-                case Permission.BLUETOOTH_ADVERTISE: {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        String hint = context.getString(R.string.common_permission_nearby_devices);
-                        if (!permissionNames.containsKey(hint)) {
-                            permissionNames.put(permission, hint);
-                        }
-                    }
+
+                // 特殊权限
+                case PermissionNames.MANAGE_EXTERNAL_STORAGE:
+                    hint = context.getString(R.string.common_permission_all_file_access);
                     break;
-                }
-                case Permission.NEARBY_WIFI_DEVICES: {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        String hint = context.getString(R.string.common_permission_nearby_devices);
-                        if (!permissionNames.containsKey(hint)) {
-                            permissionNames.put(permission, hint);
-                        }
-                    }
+                case PermissionNames.REQUEST_INSTALL_PACKAGES:
+                    hint = context.getString(R.string.common_permission_install_unknown_apps);
                     break;
-                }
-                case Permission.READ_PHONE_STATE:
-                case Permission.CALL_PHONE:
-                case Permission.ADD_VOICEMAIL:
-                case Permission.USE_SIP:
-                case Permission.READ_PHONE_NUMBERS:
-                case Permission.ANSWER_PHONE_CALLS: {
-                    String hint = context.getString(R.string.common_permission_phone);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
+                case PermissionNames.SYSTEM_ALERT_WINDOW:
+                    hint = context.getString(R.string.common_permission_display_over_other_apps);
                     break;
-                }
-                case Permission.GET_ACCOUNTS:
-                case Permission.READ_CONTACTS:
-                case Permission.WRITE_CONTACTS: {
-                    String hint = context.getString(R.string.common_permission_contacts);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
+                case PermissionNames.POST_NOTIFICATIONS:
+                    hint = context.getString(R.string.common_permission_post_notifications);
                     break;
-                }
-                case Permission.READ_CALENDAR:
-                case Permission.WRITE_CALENDAR: {
-                    String hint = context.getString(R.string.common_permission_calendar);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
+
+                // 健康数据相关 (聚合处理)
+                case PermissionNames.READ_STEPS:
+                case PermissionNames.WRITE_STEPS:
+                case PermissionNames.READ_DISTANCE:
+                    hint = context.getString(R.string.common_permission_health_steps);
                     break;
-                }
-                case Permission.READ_CALL_LOG:
-                case Permission.WRITE_CALL_LOG:
-                case Permission.PROCESS_OUTGOING_CALLS: {
-                    String hint = context.getString(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ? R.string.common_permission_call_logs : R.string.common_permission_phone);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
+                case PermissionNames.READ_HEART_RATE:
+                case PermissionNames.WRITE_HEART_RATE:
+                case PermissionNames.READ_HEART_RATE_VARIABILITY:
+                    hint = context.getString(R.string.common_permission_health_heart_rate);
                     break;
-                }
-                case Permission.ACTIVITY_RECOGNITION: {
-                    String hint = context.getString(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ? R.string.common_permission_activity_recognition_api30 : R.string.common_permission_activity_recognition_api29);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
+                case PermissionNames.READ_SLEEP:
+                case PermissionNames.WRITE_SLEEP:
+                    hint = context.getString(R.string.common_permission_health_sleep);
                     break;
-                }
-                case Permission.ACCESS_MEDIA_LOCATION: {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        String hint = context.getString(R.string.common_permission_access_media_location);
-                        if (!permissionNames.containsKey(hint)) {
-                            permissionNames.put(permission, hint);
-                        }
-                    }
+                case PermissionNames.READ_BLOOD_GLUCOSE:
+                case PermissionNames.WRITE_BLOOD_GLUCOSE:
+                case PermissionNames.READ_BLOOD_PRESSURE:
+                case PermissionNames.WRITE_BLOOD_PRESSURE:
+                    hint = context.getString(R.string.common_permission_health_blood_glucose);
                     break;
-                }
-                case Permission.SEND_SMS:
-                case Permission.RECEIVE_SMS:
-                case Permission.READ_SMS:
-                case Permission.RECEIVE_WAP_PUSH:
-                case Permission.RECEIVE_MMS: {
-                    String hint = context.getString(R.string.common_permission_sms);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
+                case PermissionNames.READ_BODY_FAT:
+                case PermissionNames.WRITE_BODY_FAT:
+                case PermissionNames.READ_WEIGHT:
+                case PermissionNames.WRITE_WEIGHT:
+                    hint = context.getString(R.string.common_permission_health_weight);
                     break;
-                }
-                case Permission.MANAGE_EXTERNAL_STORAGE: {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        String hint = context.getString(R.string.common_permission_all_file_access);
-                        if (!permissionNames.containsKey(hint)) {
-                            permissionNames.put(permission, hint);
-                        }
-                    }
+
+                // 医疗记录
+                case PermissionNames.READ_MEDICAL_DATA_ALLERGIES_INTOLERANCES:
+                case PermissionNames.READ_MEDICAL_DATA_CONDITIONS:
+                case PermissionNames.WRITE_MEDICAL_DATA:
+                    hint = context.getString(R.string.common_permission_medical_records);
                     break;
-                }
-                case Permission.REQUEST_INSTALL_PACKAGES: {
-                    String hint = context.getString(R.string.common_permission_install_unknown_apps);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
-                    break;
-                }
-                case Permission.SYSTEM_ALERT_WINDOW: {
-                    String hint = context.getString(R.string.common_permission_display_over_other_apps);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
-                    break;
-                }
-                case Permission.WRITE_SETTINGS: {
-                    String hint = context.getString(R.string.common_permission_modify_system_settings);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
-                    break;
-                }
-                case Permission.NOTIFICATION_SERVICE: {
-                    String hint = context.getString(R.string.common_permission_allow_notifications);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
-                    break;
-                }
-                case Permission.POST_NOTIFICATIONS: {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        String hint = context.getString(R.string.common_permission_post_notifications);
-                        if (!permissionNames.containsKey(hint)) {
-                            permissionNames.put(permission, hint);
-                        }
-                    }
-                    break;
-                }
-                case Permission.BIND_NOTIFICATION_LISTENER_SERVICE: {
-                    String hint = context.getString(R.string.common_permission_allow_notifications_access);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
-                    break;
-                }
-                case Permission.PACKAGE_USAGE_STATS: {
-                    String hint = context.getString(R.string.common_permission_apps_with_usage_access);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
-                    break;
-                }
-                case Permission.SCHEDULE_EXACT_ALARM: {
-                    String hint = context.getString(R.string.common_permission_alarms_reminders);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
-                    break;
-                }
-                case Permission.ACCESS_NOTIFICATION_POLICY: {
-                    String hint = context.getString(R.string.common_permission_do_not_disturb_access);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
-                    break;
-                }
-                case Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: {
-                    String hint = context.getString(R.string.common_permission_ignore_battery_optimize);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
-                    break;
-                }
-                case Permission.BIND_VPN_SERVICE: {
-                    String hint = context.getString(R.string.common_permission_vpn);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
-                    break;
-                }
-                case Permission.PICTURE_IN_PICTURE: {
-                    String hint = context.getString(R.string.common_permission_picture_in_picture);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
-                    break;
-                }
-                case Permission.GET_INSTALLED_APPS: {
-                    String hint = context.getString(R.string.common_permission_get_installed_apps);
-                    if (!permissionNames.containsKey(hint)) {
-                        permissionNames.put(permission, hint);
-                    }
-                    break;
-                }
-                default:
+
+                // 应用列表
+                case PermissionNames.GET_INSTALLED_APPS:
+                    hint = context.getString(R.string.common_permission_installed_apps);
                     break;
             }
-        }
 
+            if (hint != null && !permissionNames.containsValue(hint)) {
+                permissionNames.put(p.getPermissionName(), hint);
+            }
+        }
         return permissionNames;
     }
 }

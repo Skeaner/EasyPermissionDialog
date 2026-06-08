@@ -10,6 +10,8 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Toast;
 
+import com.hjq.permissions.permission.PermissionLists;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
@@ -24,8 +26,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        changeEN();
-        permissionDesc.put(Manifest.permission.WRITE_EXTERNAL_STORAGE, "为了存储图片");
+        // changeEN();
+        permissionDesc.put(Manifest.permission.CAMERA, "为了拍照");
         permissionDesc.put(Manifest.permission.CALL_PHONE, "为了打电话");
     }
 
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         EasyPermissionDialog.build(this)
                             .darkTheme()
                             .permissionDesc(permissionDesc)
-                            .permissions(Arrays.asList(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE))
+                            .permissions(PermissionLists.getCameraPermission(), PermissionLists.getCallPhonePermission())
                             .show(false, new EasyPermissionDialog.Callback() {
                                 @Override
                                 public void onResult(boolean allow) {
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         EasyPermissionDialog.build(this)
                             .lightTheme()
                             .permissionDesc(permissionDesc)
-                            .permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE)
+                            .permissions(PermissionLists.getCameraPermission(), PermissionLists.getCallPhonePermission())
                             .show(true, new EasyPermissionDialog.Callback() {
                                 @Override
                                 public void onResult(boolean allow) {

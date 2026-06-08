@@ -3,6 +3,8 @@ package skean.yzsm.com.easypermissiondialog;
 import android.content.Context;
 import android.util.ArrayMap;
 
+import com.hjq.permissions.permission.base.IPermission;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +22,7 @@ public final class PermissionDescriptionConvert {
     /**
      * 获取权限描述
      */
-    public static String getPermissionDescription(Context context, List<String> permissions, Map<String, String> permissionDesc) {
+    public static String getPermissionDescription(Context context, List<IPermission> permissions, Map<String, String> permissionDesc) {
         StringBuilder stringBuilder = new StringBuilder();
         LinkedHashMap<String, String> permissionNames = PermissionNameConvert.permissionsToNames(context, permissions);
         for (Map.Entry<String, String> permissionName : permissionNames.entrySet()) {
